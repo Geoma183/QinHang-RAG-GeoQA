@@ -158,4 +158,32 @@ While quantitative metrics (F1, Precision, Recall) provide numeric scores, we al
 - 🔁 Redundancy: Some models repeat information in different phrasings
 - ❌ Hallucinations: Bing occasionally invents tectonic zones
 - ⛔ Missing Key Facts: GPT-4o omits key ore deposit names
+# 📁 Data Collection and Preprocessing
 
+To support the RAG-based QA system, we compiled a comprehensive bilingual knowledge base focusing on the Qin–Hang Metallogenic Belt. A total of **615 research documents** were collected from the following platforms:
+
+| Source Platform                | Number of Documents |
+|-------------------------------|---------------------|
+| CNKI (China National Knowledge Infrastructure) | 213 |
+| Google Scholar                | 240 |
+| VIP Database                  | 7   |
+| MDPI                          | 27  |
+| Elsevier Journals             | 118 |
+| Springer Journals             | 5   |
+| Specialized Books (Monographs) | 5   |
+| **Total**                     | **615** |
+
+### 📄 Document Formats:
+- PDF (majority)
+- HTML (web-crawled papers)
+- TXT (converted full texts)
+- JSON / CSV (metadata)
+
+### ⚙️ Preprocessing Workflow:
+1. All documents were parsed using OCR-compatible loaders (Unstructured Loader via LangChain).
+2. Texts were cleaned and standardized.
+3. Recursive chunking was applied using `RecursiveCharacterTextSplitter` with a chunk size of 500 and overlap of 50 tokens.
+4. Embedded with `bge-large-zh-v1.5` and stored in a FAISS vector index.
+
+### 📝 Notes:
+Due to licensing constraints, only the structure and a few sample documents are shared in this repository.
