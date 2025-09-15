@@ -87,3 +87,75 @@ ChatGLM3-6B F1: 0.8339 | ChatGLM-RAG F1: 0.8838 | GPT-4o F1: 0.8094 | Bing F1: 0
 - RAG-enhanced ChatGLM achieved the **highest average F1 score (0.88)**
 - Full dataset, reference answers, and scoring code included for reproducibility
 - Both **automated metrics** and **qualitative comments** are presented
+
+## 🔄 RAG QA Pipeline
+
+Our system architecture follows the RAG (Retrieval-Augmented Generation) paradigm, illustrated in the diagram below (Figure 1).
+
+![RAG Pipeline](figures/rag_pipeline_diagram.png)
+
+Each step corresponds to a modular stage in the implementation:
+
+1. **Unstructured Loader**: Parses local documents of various formats (PDF, HTML, JSON, etc.) into text using OCR-enabled extractors.
+2. **Text Splitter**: Segments text into logical chunks (e.g., paragraph/sentence-level) using LangChain’s `RecursiveCharacterTextSplitter`.
+3. **Text Embedding**: Uses the `bge-large-zh-v1.5` model to convert each chunk into semantic vectors.
+4. **Vector Indexing**: Embeddings are stored in FAISS using HNSW or IVF index, depending on data volume.
+5. **Query Embedding**: User questions are also embedded and matched using vector similarity.
+6. **Prompt Construction**: Retrieved top-K text chunks are used to build context-aware prompts for generation.
+7. **Answer Generation**: The `ChatGLM3-6B` model processes the prompt to produce answers.
+
+The pipeline is fully implemented in `src/` and can be run end-to-end with the provided scripts.
+
+embedding_model: bge-large-zh-v1.5
+chunk_size: 500
+chunk_overlap: 50
+vector_index:
+  type: HNSW
+  dimension: 1024
+  metric: cosine
+retriever:
+  top_k: 5
+llm:
+  model: ChatGLM3-6B
+  inference_mode: local  # or api
+# 📁 Data Source Overview
+
+The QA system is powered by a local knowledge base composed of 615 documents, including:
+
+- PDF geological reports
+- TXT monographs
+- JSON metadata
+- HTML files from CNKI, Elsevier, VIP databases (non-open-source)
+- Manually compiled bilingual glossaries
+
+Due to licensing limitations, the full corpus is not shared. Instead, we provide the structure and 5 sample documents for demonstration.
+
+| File Format | Parser Used             |
+|-------------|--------------------------|
+| PDF         | `PyMuPDF` + OCR fallback |
+| HTML        | `BeautifulSoup` + lxml   |
+| JSON        | Python `json` parser     |
+| TXT         | UTF-8 parsed             |
+
+Chunking is performed using LangChain’s `RecursiveCharacterTextSplitter`.
+
+# 🧠 Error & Hallucination Analysis
+
+While quantitative metrics (F1, Precision, Recall) provide numeric scores, we also conducted manual inspection on divergent cases.
+
+## Example 1 — Q: "What is the Qinhang Mineral Belt?"
+
+| Model        | Answer Accuracy | Notes |
+|--------------|------------------|-------|
+| ChatGLM3-6B  | Partial           | Missed several deposit names |
+| ChatGLM-RAG  | ✅ Accurate       | Matched with Dexing, Dabaoshan, etc. |
+| GPT-4o       | Mostly correct    | Lacked structural explanation |
+| Bing         | Partial           | Some hallucinated terms |
+| Gemini       | ✅ Good summary   | Included historical/geological context |
+
+## Common Observed Errors
+
+- 🔁 Redundancy: Some models repeat information in different phrasings
+- ❌ Hallucinations: Bing occasionally invents tectonic zones
+- ⛔ Missing Key Facts: GPT-4o omits key ore deposit names
+
