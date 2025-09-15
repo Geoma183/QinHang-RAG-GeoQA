@@ -52,47 +52,54 @@ retriever:
 llm:
   model: ChatGLM3-6B
   inference_mode: local  # or api
-💾 3. Data Collection & Preprocessing
+```
 
-A total of 615 research documents on the Qin–Hang Metallogenic Belt were collected:
+---
 
-Source Platform	Number
-CNKI (China National Knowledge Infrastructure)	213
-Google Scholar	240
-VIP Database	7
-MDPI	27
-Elsevier Journals	118
-Springer Journals	5
-Specialized Monographs	5
-Total	615
-📄 Formats:
+## 💾 3. Data Collection & Preprocessing
 
-PDF, HTML, TXT, JSON, CSV
+A total of **615 research documents** on the Qin–Hang Metallogenic Belt were collected:
 
-⚙️ Processing Workflow:
+| Source Platform                | Number |
+|-------------------------------|--------|
+| CNKI (China National Knowledge Infrastructure) | 213 |
+| Google Scholar                | 240 |
+| VIP Database                  | 7   |
+| MDPI                          | 27  |
+| Elsevier Journals             | 118 |
+| Springer Journals             | 5   |
+| Specialized Monographs        | 5   |
+| **Total**                     | **615** |
 
-OCR parsing via LangChain loaders
+### 📄 Formats:
+- PDF, HTML, TXT, JSON, CSV
 
-Cleaned and chunked (500 tokens, 50 overlap)
+### ⚙️ Processing Workflow:
+- OCR parsing via LangChain loaders
+- Cleaned and chunked (500 tokens, 50 overlap)
+- Embedded with `bge-large-zh-v1.5`
+- Indexed using FAISS
 
-Embedded with bge-large-zh-v1.5
+📁 *Due to licensing, only 5 sample documents are shared.*
 
-Indexed using FAISS
+---
 
-📁 Due to licensing, only 5 sample documents are shared.
+## 🧠 4. Source Code & Usage
 
-🧠 4. Source Code & Usage
+All source code is located in [`/src`](./src/).
 
-All source code is located in /src
-.
+### 🧾 Scripts
 
-🧾 Scripts
-File	Description
-1_pdf_to_txt.py	Parses PDFs into .txt
-2_txt_to_vector.py	Embeds text and stores in FAISS
-3_faiss_retrieval.py	Retrieves top-K chunks for query
-4_rag_glm_answer.py	RAG generation using ChatGLM3-6B
-▶️ Run Example
+| File | Description |
+|------|-------------|
+| `1_pdf_to_txt.py` | Parses PDFs into `.txt` |
+| `2_txt_to_vector.py` | Embeds text and stores in FAISS |
+| `3_faiss_retrieval.py` | Retrieves top-K chunks for query |
+| `4_rag_glm_answer.py` | RAG generation using ChatGLM3-6B |
+
+### ▶️ Run Example
+
+```bash
 # 1. Convert PDF corpus to plain text
 python 1_pdf_to_txt.py
 
@@ -104,90 +111,87 @@ python 3_faiss_retrieval.py --query "What are the mineralization characteristics
 
 # 4. Generate answer using ChatGLM3-6B
 python 4_rag_glm_answer.py
+```
 
-📊 5. Evaluation
-🔬 Dataset
+---
+
+## 📊 5. Evaluation
+
+### 🔬 Dataset
 
 We constructed a 100-question test set covering:
 
-Regional geology
+- Regional geology
+- Ore types
+- Tectonic evolution
+- Deposit examples
 
-Ore types
+### 🤖 Models Compared
 
-Tectonic evolution
+- ChatGLM3-6B (baseline)
+- ChatGLM3-6B + RAG (our method)
+- GPT-4o
+- Bing Chat (2024)
+- Gemini (Google)
 
-Deposit examples
+### 🧪 Metrics
 
-🤖 Models Compared
+- **Precision**: Overlap with reference tokens  
+- **Recall**: Coverage of reference by response  
+- **F1 Score**: Harmonic mean of the above
 
-ChatGLM3-6B (baseline)
+> 📌 All models evaluated under identical conditions, with internet access disabled unless stated.
 
-ChatGLM3-6B + RAG (our method)
+### 📌 Sample Score
 
-GPT-4o
-
-Bing Chat (2024)
-
-Gemini (Google)
-
-🧪 Metrics
-
-Precision: Overlap with reference tokens
-
-Recall: Coverage of reference by response
-
-F1 Score: Harmonic mean of the above
-
-📌 All models evaluated under identical conditions, with internet access disabled unless stated.
+```text
 Question: What is the Qinhang Mineral Belt?
 ChatGLM3-6B F1: 0.8339 | ChatGLM-RAG F1: 0.8838 | GPT-4o F1: 0.8094 | Bing F1: 0.8193 | Gemini F1: 0.8917
-✅ Highlights
+```
 
-100 QA pairs × 5 models × 3 metrics
+### ✅ Highlights
 
-RAG-enhanced ChatGLM achieved highest F1 (0.8838)
+- 100 QA pairs × 5 models × 3 metrics
+- RAG-enhanced ChatGLM achieved highest F1 (0.8838)
+- Full table at: [`evaluation/qa_evaluation_table.csv`](evaluation/qa_evaluation_table.csv)
+- Scripts and references included
 
-Full table at: evaluation/qa_evaluation_table.csv
+---
 
-Scripts and references included
-
-
-
-🧐 6. Error & Hallucination Analysis
+## 🧐 6. Error & Hallucination Analysis
 
 We manually reviewed performance across multiple questions.
 
-Example Case
-Model	Verdict	Notes
-ChatGLM3-6B	❌ Partial	Missed key deposit names
-ChatGLM-RAG	✅ Accurate	Mentioned Dexing, Dabaoshan, etc.
-GPT-4o	⚠️ Incomplete	Lacked structural geology
-Bing	❌ Hallucinated	Made up tectonic terms
-Gemini	✅ Good summary	Included historical/geological framing
-Common Issues
+### Example Case
 
-🔁 Repetition
+| Model        | Verdict        | Notes |
+|--------------|----------------|-------|
+| ChatGLM3-6B  | ❌ Partial      | Missed key deposit names |
+| ChatGLM-RAG  | ✅ Accurate     | Mentioned Dexing, Dabaoshan, etc. |
+| GPT-4o       | ⚠️ Incomplete   | Lacked structural geology |
+| Bing         | ❌ Hallucinated | Made up tectonic terms |
+| Gemini       | ✅ Good summary | Included historical/geological framing |
 
-❌ Hallucinated place names
+### Common Issues
 
-⛔ Omission of key terms
+- 🔁 Repetition
+- ❌ Hallucinated place names
+- ⛔ Omission of key terms
 
-Full discussion in evaluation/error_analysis.md
+Full discussion in [`evaluation/error_analysis.md`](evaluation/error_analysis.md)
 
+---
 
-
-📚 7. For Reviewers & Reproducibility
+## 📚 7. For Reviewers & Reproducibility
 
 This repository is designed to support peer review and academic scrutiny.
 
-✅ Pipeline transparency (code/scripts/configs)
-
-✅ Data origin clarity (615 documents)
-
-✅ Evaluation with automated + manual metrics
-
-✅ Structured folder system
-
-✅ Open diagrams & prompt templates
+- ✅ Pipeline transparency (code/scripts/configs)
+- ✅ Data origin clarity (615 documents)
+- ✅ Evaluation with automated + manual metrics
+- ✅ Structured folder system
+- ✅ Open diagrams & prompt templates
 
 Please feel free to explore, run, or adapt this system for geoscientific question answering.
+
+---
