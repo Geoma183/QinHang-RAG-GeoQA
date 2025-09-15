@@ -53,3 +53,14 @@ To address reviewer concerns regarding evaluation reproducibility and methodolog
 Each script maps directly to a step in the pipeline: document parsing, semantic embedding, vector-based retrieval, and RAG-based answer generation.
 
 Scripts are fully documented and can be run independently or as a pipeline.
+
+
+## Evaluation Metrics
+
+To quantitatively compare the models’ performance, we used standard information retrieval metrics:
+
+- **Precision**: the proportion of relevant information in the generated content.
+- **Recall**: the proportion of the ground-truth information successfully captured by the model.
+- **F1 Score**: the harmonic mean of precision and recall.
+
+All scores were annotated manually by domain experts based on a predefined rubric. Each model’s answer was independently evaluated for correctness, completeness, and professional terminology usage.
