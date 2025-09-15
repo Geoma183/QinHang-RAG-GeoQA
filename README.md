@@ -66,3 +66,24 @@ We present 100 domain-specific questions covering regional geology, mineralizati
 - GPT-4o
 - Bing Chat (2024)
 - Gemini (Google)
+## 🧪 Metric Design
+
+Each answer was scored based on:
+- **Precision**: Token overlap with reference
+- **Recall**: Token recall against reference
+- **F1 Score**: Harmonic mean of precision & recall
+
+All models were evaluated **under identical conditions**, without internet access unless explicitly noted.
+
+## 📌 Sample Entry (from row 1)
+
+```text
+Question: What is the Qinhang Mineral Belt?
+ChatGLM3-6B F1: 0.8339 | ChatGLM-RAG F1: 0.8838 | GPT-4o F1: 0.8094 | Bing F1: 0.8193 | Gemini F1: 0.8917
+```markdown
+### ✅ Evaluation Highlights
+
+- 100 QA pairs, across 5 major LLM systems
+- RAG-enhanced ChatGLM achieved the **highest average F1 score (0.88)**
+- Full dataset, reference answers, and scoring code included for reproducibility
+- Both **automated metrics** and **qualitative comments** are presented
