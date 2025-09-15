@@ -42,3 +42,14 @@ python 3_faiss_retrieval.py --query "What are the mineralization characteristics
 # 4. Generate response via ChatGLM3-6B
 python 4_rag_glm_answer.py
 
+
+---
+
+```markdown
+## 🔄 Reproducibility for Review
+
+To address reviewer concerns regarding evaluation reproducibility and methodological clarity, we provide four core scripts replicating the RAG QA workflow as described in Section 3 of the manuscript.
+
+Each script maps directly to a step in the pipeline: document parsing, semantic embedding, vector-based retrieval, and RAG-based answer generation.
+
+Scripts are fully documented and can be run independently or as a pipeline.
